@@ -6,7 +6,6 @@ from datetime import datetime
 class LogSystem:
     f"""
     DESCRIPTION:
-
         class for handling all logging system process for application.
 
 
@@ -19,10 +18,8 @@ class LogSystem:
 
 
     FUNCTIONS:
-
         create_log_file() -> None
             creating a new log.txt file to use in case of we need to add any event to logs.
-
         write_into_log() -> None
             Function to write into Log.txt file to add an event to logs
 
@@ -34,13 +31,12 @@ class LogSystem:
     """
 
     def __init__(self) -> None:
-        self_cwd = os.chdir(os.path.dirname(__file__))
+        self_cwd = os.path.dirname(__file__)
         self.log_file = "Logs.txt"
         self.user_name = getpass.getuser()
         self.time_now = str(datetime.now())
         self.currant_directories = os.listdir(self_cwd)
         self.create_log_file()
-
 
     def create_log_file(self: "LogSystem") -> None:
         """ Function to create a log file if it doesn't exist. """
@@ -52,8 +48,7 @@ class LogSystem:
             with open(self.log_file, "a") as log_file_obj:
                 log_file_obj.write(self.write_into_log("+", "Log file was created"))
 
-
-    def write_into_log(self: "LogSystem", status: str, message: str) -> str:
+    def write_into_log(self: "LogSystem", status: str, message: str) -> None:
         """ Function to write into Log.txt file to add an event to logs
 
         Args:

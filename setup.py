@@ -1,8 +1,9 @@
 import os
 import sys
 import getpass
-from cores.database_api import Database
+from cores.database_api import DatabaseAPI
 from platform import platform
+
 
 def check_python_version():
     # check if python 3 is installed
@@ -12,9 +13,11 @@ def check_python_version():
     else:
         return 1
 
+
 def install_reqs():
     # install requirements from req.txt
-    if platform() == 'Windows':
+    print(platform())
+    if "Windows" in platform():
         os.system("pip install -r req.txt")
         os.system("cls")
     else:
@@ -22,18 +25,15 @@ def install_reqs():
         os.system("clear")
     print("\n Requirements installed successfully \n")
 
-def user_account_setup():
-    # create database object
-    db_obj = Database()
-    # use existing username from os as Account Username
-    user_name = os.getlogin()
-    print("Your user name is: " + user_name)
 
-    # allow user to create a unique Account Password
-    print("Your Account Password: ", end = "")
-    user_pass = getpass.getpass()
-    db_obj.db_query(f"INSERT INTO Users (UserName, UserPass) VALUES ('{user_name}', '{user_pass}');")
+def user_account_setup():
+    db_obj = DatabaseAPI()
+    username = os.getlogin()
+    password = getpass.getpass()
+    db_obj.db_query(f"""INSERT INTO Users (User_Name, User_Password)
+                        VALUES ('{username}', '{password}');""")
     print("User Account Created!")
+
 
 if __name__ == '__main__':
     # change cwd to the setup.py script directory

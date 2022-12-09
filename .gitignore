@@ -128,11 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Database
-PyPassdb.sqlite3
-
-# Security key
-security_key.key
-
-# logs
 Logs.txt
+.idea/
+saved-files/
+PyPassdb.sqlite3
+security_key.key

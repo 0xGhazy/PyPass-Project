@@ -1,9 +1,6 @@
 
 
 
-<div align="center" style="font-size:35px; color:green;"><br>
-PyPass Password Manager
-
 <br></div>
 
 # [+] Project Overview.
@@ -33,3 +30,11 @@ In this project we try to create a free and opensource application thats respect
 - [LinkedIn](https://www.linkedin.com/in/0xGhazy/)
 - [Twitter](https://twitter.com/0xGhazy)
 - [Blog](https://0xghazy.wordpress.com/)
+
+
+- [ ] Colors
+- [ ] Icons
+- [ ] Delete Files after importing
+- [ ] Data backup button
+- [ ] start working on extension
+- 

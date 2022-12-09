@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>404</width>
-    <height>427</height>
+    <width>405</width>
+    <height>544</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>404</width>
-    <height>427</height>
+    <width>405</width>
+    <height>544</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>404</width>
-    <height>427</height>
+    <width>405</width>
+    <height>544</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -38,133 +38,69 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>-30</x>
-     <y>-40</y>
-     <width>441</width>
-     <height>471</height>
+     <x>-20</x>
+     <y>-30</y>
+     <width>681</width>
+     <height>591</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>441</width>
-     <height>471</height>
+     <width>681</width>
+     <height>591</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>441</width>
-     <height>471</height>
+     <width>681</width>
+     <height>591</height>
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">
-background-color: rgb(24,24,36);
-border-color: rgb(16, 20, 20);
-</string>
+    <string notr="true">background-color: #372948;
+border: #372948;</string>
    </property>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
      <string>Tab 2</string>
     </attribute>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="status">
      <property name="geometry">
       <rect>
-       <x>160</x>
-       <y>60</y>
-       <width>141</width>
-       <height>141</height>
+       <x>10</x>
+       <y>480</y>
+       <width>421</width>
+       <height>51</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+      </font>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:red;</string>
      </property>
      <property name="text">
       <string/>
      </property>
-     <property name="pixmap">
-      <pixmap>icons/users.png</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="login_user_line">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>230</y>
-       <width>311</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>15</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Enter username to login</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">	border-radius:7px;
-	border:1px solid #18ab29;
-color: gray;</string>
-     </property>
-     <property name="inputMask">
-      <string/>
-     </property>
-     <property name="maxLength">
-      <number>50</number>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
-     </property>
-     <property name="placeholderText">
-      <string> Username</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="login_password_line">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>280</y>
-       <width>311</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>15</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Enter password :)</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">	border-radius:7px;
-	border:1px solid #18ab29;
-color: gray;</string>
-     </property>
-     <property name="inputMask">
-      <string/>
-     </property>
-     <property name="maxLength">
-      <number>50</number>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="placeholderText">
-      <string> Password</string>
      </property>
     </widget>
     <widget class="QPushButton" name="login_button">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>340</y>
-       <width>141</width>
-       <height>41</height>
+       <x>100</x>
+       <y>400</y>
+       <width>241</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -219,13 +155,13 @@ QPushButton:active {
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="status">
+    <widget class="QLineEdit" name="login_password_line">
      <property name="geometry">
       <rect>
-       <x>80</x>
-       <y>400</y>
-       <width>361</width>
-       <height>21</height>
+       <x>50</x>
+       <y>320</y>
+       <width>349</width>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
@@ -233,11 +169,85 @@ QPushButton:active {
        <pointsize>15</pointsize>
       </font>
      </property>
+     <property name="toolTip">
+      <string>Enter password :)</string>
+     </property>
      <property name="styleSheet">
-      <string notr="true">color:red;</string>
+      <string notr="true">	border-radius:7px;
+	border:1px solid #18ab29;
+color: gray;</string>
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>50</number>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string> Password</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="login_user_line">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>240</y>
+       <width>349</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Enter username to login</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-radius:7px;
+border:1px solid gray;
+color: gray;</string>
+     </property>
+     <property name="inputMask">
+      <string/>
+     </property>
+     <property name="maxLength">
+      <number>50</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string> Username</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="signin_user_img">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>40</y>
+       <width>151</width>
+       <height>171</height>
+      </rect>
      </property>
      <property name="text">
-      <string>    </string>
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>../PyPass-Extension/result.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

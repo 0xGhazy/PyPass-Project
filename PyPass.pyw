@@ -1,246 +1,274 @@
 import os
 import sys
-import json
+import string
+import random
+import datetime
+import pyperclip
 from pathlib import Path
 from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5 import QtWidgets, uic, QtGui
-from PyQt5.QtWidgets import QLineEdit, QMessageBox, QMenu, QAction, QFileDialog
+from PyQt5 import QtWidgets, uic, QtGui, QtCore
+from PyQt5.QtWidgets import QLineEdit, QFileDialog
+# importing applications cores
 from cores.logsystem import LogSystem
-from cores.encryption import Security
-from cores.database_api import Database
-from cores.QR_handler import QRHandler
-from cores.password import Password
+from cores.encryption import EncryptionHandler
+from cores.database_api import DatabaseAPI
+from cores.qr_handler import QRHandler
 from cores.login_screen_handler import LoginScreen
-from cores.ThemeEditor import ThemeScreenEdit
-import pyperclip
-
 
 BASE_DIR = Path(__file__).resolve().parent
-main_UI = BASE_DIR / "ui" / "mainUI.ui"
+main_UI = BASE_DIR / "ui" / "MainWindowUI.ui"
 
-
-# change this when you wanna add new platform, append it in lower case :)
+# change this when you want to add new platform, append it in lower case :)
 SUPPORTED_PLATFORMS = ["facebook", "codeforces", "github",
-                       "gmail", "hackerranck", "medium",
+                       "gmail", "HackerRank", "medium",
                        "outlook", "quora", "twitter",
                        "udacity", "udemy", "university", "wordpress"]
+
+BUTTONS_STYLE = {
+    "normal-style": """QPushButton{background-color:#251B37;color: white;}
+                       QPushButton:hover {background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+                       background-color:#372948;}
+                       QPushButton:active {position:relative;top:3px;}""",
+    "clicked-style": "background-color:#372948;color:white;"
+}
+
 
 class PyPass(QtWidgets.QMainWindow):
 
     def __init__(self) -> None:
         super(PyPass, self).__init__()
+        self.qr_handle = None
         os.chdir(os.path.dirname(__file__))
-        # loading .ui design file.
-        uic.loadUi(main_UI, self) 
-        # hide tabwidget
-        self.tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
-        self.tabWidgets.tabBar().setVisible(False)
+        uic.loadUi(main_UI, self)
+        self.outer_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
+        self.inner_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_2')
+        self.outer_tabWidgets.tabBar().setVisible(False)
+        self.inner_tabWidgets.tabBar().setVisible(False)
+        # self.show()
         self.app_path = Path(__file__).resolve().parent
-        # Application Data
-        self.database_obj   = Database()
-        self.security_obj   = Security()
-        self.log_obj        = LogSystem()
-        self.signin_window  = LoginScreen()
-        self.password_obj = Password()
-        self.is_clicked = True      # if show password is clicked
-        
-        ## calling the sign in window/Dialog
+        self.database_obj = DatabaseAPI()
+        self.security_obj = EncryptionHandler()
+        self.log_obj = LogSystem()
+        self.signin_window = LoginScreen()
+        self.show_password_is_clicked = True  # if show password is clicked
         if self.signin_window.exec_() == QtWidgets.QDialog.Accepted:
-            # Starter methods
-            self.display_accounts_list()
-            self.display_accounts_to_edit()
-            self.handleButtons()
-            ### self.display_menus()
-            # show our application
-            self.change_theme()
+            self.display_accounts(self.accounts_list_edit)
+            self.display_accounts(self.accounts_list_view)
+            # self.display_accounts_to_edit()
+            # self.handle_buttons()
+            self.accounts_page.clicked.connect(self.outer_accounts_page)
+            self.files_page.clicked.connect(self.outer_files_page)
+            self.saveed_accounts_page.clicked.connect(self.accounts_view_page)
+            self.edit_accounts_page.clicked.connect(self.accounts_edit_page)
+            self.accounts_list_view.itemClicked.connect(self.accounts_list_view_click)
+            self.settings_page.clicked.connect(self.outer_setting_page)
+            self.insert_account_data.clicked.connect(self.add_new_account)
+            self.update_account_data.clicked.connect(self.edit_account)
+            self.show_password.clicked.connect(self.show_hide_password)
+            self.delete_account_data.clicked.connect(self.delete_account)
+            self.accounts_list_edit.itemClicked.connect(self.fill_account_data)
+            self.files_list_view.itemClicked.connect(self.files_list_view_clicked)
+            self.import_key_btn.clicked.connect(self.import_key)
+            self.import_file_btn.clicked.connect(self.import_file)
+            self.export_file_btn.clicked.connect(self.export_file)
+            self.restore_file_btn.clicked.connect(self.file_restore)
+            self.export_key_btn.clicked.connect(self.export_key)
             self.show()
 
+    #
+    # def handle_buttons(self) -> None:
+    #     """ Handling all buttons in the application """
+    #     self.accounts_page.clicked.connect(self.home_page)
+    #     self.files_page.clicked.connect(self.outer_files_page)
+    #     # self.accounts_nav.clicked.connect(self.accounts_page)
+    #     # self.edit_nav.clicked.connect(self.edit_accounts_page)
+    #     self.settings_page.clicked.connect(self.setting_page)
+    #     self.decrypt_and_copy_password.clicked.connect(self.copy_plaintext_password)
+    #     self.select_by_id.clicked.connect(self.select_account_id)
+    #     self.insert_account_data.clicked.connect(self.add_new_account)
+    #     self.update_account_data.clicked.connect(self.edit_account)
+    #     self.delete_account_data.clicked.connect(self.delete_account)
+    #     self.show_password.clicked.connect(self.is_plain)
+    #     self.display_qr_btn.clicked.connect(self.show_qr_image)
+    #     self.import_key_btn.clicked.connect(self.import_key)
+    #     self.export_key_btn.clicked.connect(self.export_key)
 
-    def handleButtons(self) -> None:
-        """ Handling all buttons in the application """
-        self.home_nav.clicked.connect(self.home_page)
-        self.accounts_nav.clicked.connect(self.accounts_page)
-        self.edit_nav.clicked.connect(self.edit_accounts_page)
-        self.settings_nav.clicked.connect(self.setting_page)
-        self.decrypt_and_copy_password.clicked.connect(self.copy_plaintext_password)
-        self.select_by_id.clicked.connect(self.select_account_id)
-        self.insert_account_data.clicked.connect(self.add_new_account)
-        self.update_account_data.clicked.connect(self.edit_account)
-        self.delete_account_data.clicked.connect(self.delete_account)
-        self.show_password.clicked.connect(self.is_plain)
-        self.display_qr_btn.clicked.connect(self.show_qr_image)
-        self.import_key_btn.clicked.connect(self.import_key)
-        self.export_key_btn.clicked.connect(self.export_key)
-        self.theme_editor_button.clicked.connect(self.run_Editor)
+    # ------------------------------------- Navigation Buttons -------------------------------------
 
+    # Outer Widget navigations
+    def outer_accounts_page(self) -> None:
+        self.outer_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
+        self.outer_tabWidgets.setCurrentIndex(0)
+        # change button style after click
+        self.accounts_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
+        self.files_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.settings_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.accounts_view_page()
 
-                    ############################
-                    ## Handling right buttons ##
-                    ############################
+    def outer_files_page(self) -> None:
+        self.outer_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
+        self.outer_tabWidgets.setCurrentIndex(1)
+        # change button style after click
+        self.accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.files_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
+        self.settings_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.fill_files_list_view()
 
-    def home_page(self) -> None:
-        self.tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
-        self.tabWidgets.setCurrentIndex(0)
-
-    def accounts_page(self) -> None:
-        self.tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
-        self.tabWidgets.setCurrentIndex(1)
-        # refresh the list in the next click
-        self.listWidget.clear()
-        self.listWidget.update()
-        self.display_accounts_list()
-
-    def edit_accounts_page(self) -> None:
-        self.tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
-        self.tabWidgets.setCurrentIndex(2)
-        # refresh the list in the next click
-        self.listWidget_edit_accounts.clear()
-        self.listWidget_edit_accounts.update()
-        self.display_accounts_to_edit()
-
-    def setting_page(self) -> None:
-        self.tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
-        self.tabWidgets.setCurrentIndex(3)
+    def outer_setting_page(self) -> None:
+        self.outer_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
+        self.outer_tabWidgets.setCurrentIndex(2)
         # Display the currant key path
         key_path = self.app_path / "cores" / "security_key.key"
         self.enc_key_edit.setText(f" {str(key_path)}")
+        # change button style after click
+        self.accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.files_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.settings_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
 
-                    #######################################
-                    ## Handling buttons in accounts page ##
-                    #######################################
+    def release_note_action(self):
+        pass  # star_my_repo
 
-    def copy_plaintext_password(self) -> None:
-        """Copy plain text password to clipboard after decrypting it."""
-        selected_account = self.listWidget.currentItem().text().split(" :: ")
-        accound_id = int(selected_account[0])
-        db_data = list(self.database_obj.db_query(f"SELECT * FROM Accounts WHERE id = {accound_id};"))
-        plaintext_password = self.security_obj.decrypt(db_data[0][3].encode())
-        pyperclip.copy(plaintext_password)
-        # create log event in /cores/Logs.txt
-        self.log_obj.write_into_log("+", f"({selected_account}) has been moved to the clipboard")
-        self.statusBar().showMessage("[+] Copy the selected account.")
-        return plaintext_password
+    # Inner Widget Navigation
+    def accounts_view_page(self):
+        self.inner_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_2')
+        self.inner_tabWidgets.setCurrentIndex(0)
+        # update the buttons style
+        self.saveed_accounts_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
+        self.edit_accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.display_accounts(self.accounts_list_view)
+        self.clear_accounts_data()
 
-    def show_qr_image(self):
-        
-        # [+] Generate the photo for selected account
-        self.qr_handle = QRHandler()
-        self.plain_password = self.copy_plaintext_password()
-        self.qr_handle.generate_qr(self.plain_password, "photo.png")
+    def accounts_edit_page(self):
+        self.inner_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_2')
+        self.inner_tabWidgets.setCurrentIndex(1)
+        # update the buttons style
+        self.saveed_accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
+        self.edit_accounts_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
+        self.display_accounts(self.accounts_list_edit)
+        self.clear_accounts_data()
 
-        # [+] Display the image
-        # Reading qr photo in Pixmap
-        self.pixmap = QPixmap("photo.png")
-        # Append the pixmap to QLable
-        self.qr_image_obj.setPixmap(self.pixmap)
-        self.qr_image_obj.setScaledContents(True)
+    # ---------------------------------------------------------------------------------------------
 
-        # [+] Remove the image from the path.
-        os.remove("photo.png")
-        
-
-
-                    ###################################
-                    ## Handling buttons in edit page ##
-                    ###################################
-
-    def select_account_id(self) -> None: # 11
-        """return the selected account data and put them into edit line"""
-        account_id = self.getting_account_id.text()
+    # Accounts view page methods ------------------------------------------------------------------
+    def accounts_list_view_click(self):
+        account_index = int(self.accounts_list_view.currentRow())
+        selected_account = self.database_obj.list_accounts()[account_index]
         try:
-            response = list(self.database_obj.db_query(f"SELECT * FROM Accounts WHERE id={account_id}"))
-            # display result on line edit
-            self.edit_account_platform.setText(response[0][1])
-            self.edit_account_email.setText(response[0][2])
-            self.edit_account_password.setText(self.security_obj.decrypt(response[0][3].encode()))
-            # create log event with the selected account information with out password !!
-            self.log_obj.write_into_log("+", f"({response[0][0:-1]}) Was selected!")
-        except Exception as error_message:
-            print(error_message)
+            plain_password = self.security_obj.decrypt(selected_account[3].encode())
+            pyperclip.copy(plain_password.decode())
+            self.qr_handle = QRHandler()
+            self.qr_handle.generate_qr(plain_password.decode(), "photo.png")
+            # Reading qr photo in Pixmap and Append the pixmap to QLabel
+            self.qr_image_obj.setPixmap(QPixmap("photo.png"))
+            self.qr_image_obj.setScaledContents(True)
+            # [+] Remove the image from the path.
+            os.remove("photo.png")
+            self.statusBar().showMessage("[+] Password is copied successfully")
+        except Exception as error:
+            print(error)
 
+    # ---------------------------------------------------------------------------------------------
 
+    # Accounts edit page methods ------------------------------------------------------------------
     def add_new_account(self) -> None:
         """adding new account to database"""
         plat_name = self.edit_account_platform.text()
-        account =  self.edit_account_email.text()
+        account = self.edit_account_email.text()
         plain_password = self.edit_account_password.text()
-
         # Check for the password strength
-        if (self.password_obj.check_strength(plain_password) < 3):
-            generated_password = self.password_obj.generate_password()
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Information)
-            msgBox.setWindowTitle("Password Tip!")
-            msgBox.setText(f"""
-            Your password seems to be weak one :(
-            Let me help you with powerful random password\n\n
-            Your password will be: {generated_password}
-            """)
-            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-
-            user_response = msgBox.exec()
-            if user_response == QMessageBox.Ok:
-                plain_password = generated_password
-        
-        # Encrypt password
-        encrypted_password = self.security_obj.encrypt(plain_password)
-        self.database_obj.db_query(
-        f"INSERT INTO Accounts (ApplicationName, Account, EncryptedPassword) VALUES ('{plat_name}', '{account}', '{encrypted_password}');")
-        self.statusBar().showMessage("[+] A new account has been added to database.")
-        self.log_obj.write_into_log("+", f"(('{plat_name}', '{account}', '{encrypted_password}')) account was added!")
-        self.edit_accounts_page()
+        encrypted_password = self.security_obj.encrypt(plain_password.encode())
+        new_account = {
+            "Platform": plat_name,
+            "Account": account,
+            "Password": encrypted_password.decode()
+        }
+        try:
+            self.database_obj.add_account(new_account)
+            self.statusBar().showMessage("[+] Account added successfully")
+        except Exception as error:
+            self.statusBar().showMessage("[!] Can't add this account")
+            self.log_obj.write_into_log("-", f"{error}")
+        self.display_accounts(self.accounts_list_edit)
+        self.clear_accounts_data()
 
     def edit_account(self) -> None:
         """update selected account on database"""
+        account_id = self.edit_account_id.text()
         plat_name = self.edit_account_platform.text()
-        account =  self.edit_account_email.text()
+        account = self.edit_account_email.text()
         plain_password = self.edit_account_password.text()
-        encrypted_password = self.security_obj.encrypt(plain_password)
-        id = int(self.getting_account_id.text())
-        self.database_obj.db_query(
-            f"UPDATE Accounts SET ApplicationName = '{plat_name}', Account = '{account}', EncryptedPassword = '{encrypted_password}' WHERE id = {id};")
-        self.log_obj.write_into_log("+", f"(('{plat_name}', '{account}', '{encrypted_password}')) account was updated!")
-        self.statusBar().showMessage("[+] The account has been updated successfully!")
-        self.edit_accounts_page()
+        encrypted_password = self.security_obj.encrypt(plain_password.encode())
+        if len(plat_name) != 0 and len(account) != 0 and len(plain_password) != 0:
+            update_account = {
+                "Platform": plat_name,
+                "Account": account,
+                "Password": encrypted_password.decode()
+            }
+            try:
+                self.database_obj.update_account(update_account, account_id)
+                self.statusBar().showMessage("[+] Account updated successfully")
+            except Exception as error:
+                self.statusBar().showMessage("[!] Can't update this account")
+                self.log_obj.write_into_log("-", f"{error}")
+        self.display_accounts(self.accounts_list_edit)
+        self.clear_accounts_data()
 
-    def is_plain(self):
-        if self.is_clicked:
+    def show_hide_password(self):
+        icons_path = BASE_DIR / "ui" / "icons"
+        # closed_eye = BASE_DIR / "ui" / "icons" / "closed-eye.png"
+        if self.show_password_is_clicked:
             self.edit_account_password.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.show_password.setText("Hide")
-            self.is_clicked = False
-        elif self.is_clicked == False:
+            self.show_password.setText("")
+            self.show_password.setIcon(QIcon(os.path.join(r"{0}".format(icons_path), "closed-eye.png")))
+            self.show_password_is_clicked = False
+        else:
             self.edit_account_password.setEchoMode(QLineEdit.EchoMode.Password)
-            self.show_password.setText("Show")
-            self.is_clicked = True
-
+            self.show_password.setText("")
+            self.show_password.setIcon(QIcon(os.path.join(r"{0}".format(icons_path), "open-eye.png")))
+            self.show_password_is_clicked = True
 
     def delete_account(self) -> None:
-        """delete selected account from fatabase"""
-        id = int(self.getting_account_id.text())
-        self.database_obj.db_query(f"DELETE FROM Accounts WHERE id = {id};")
-        self.log_obj.write_into_log("+", f"({id}) account was deleted!")
-        self.statusBar().showMessage("[+] The account has been removed successfully!")
-        self.edit_accounts_page()
+        """delete selected account from database"""
+        account_id = self.edit_account_id.text()
+        self.database_obj.delete_account_by_id(account_id)
+        self.display_accounts(self.accounts_list_edit)
+        self.statusBar().showMessage("[+] Account removed successfully!")
+        self.clear_accounts_data()
 
-                    ######################################
-                    ## Handling Methods in setting page ##
-                    ######################################
+    def fill_account_data(self):
+        account_index = int(self.accounts_list_edit.currentRow())
+        selected_account = self.database_obj.list_accounts()[account_index]
+        account_id, platform, account, password = selected_account
+        # fill the account fields
+        self.edit_account_id.setText(str(account_id))
+        self.edit_account_platform.setText(str(platform))
+        self.edit_account_email.setText(str(account))
+        plain_password = self.security_obj.decrypt(password).decode()
+        self.edit_account_password.setText(str(plain_password))
 
+    def clear_accounts_data(self):
+        self.edit_account_id.setText("")
+        self.edit_account_platform.setText("")
+        self.edit_account_email.setText("")
+        self.edit_account_password.setText("")
+
+    # ---------------------------------------------------------------------------------------------
+
+    # Handling Methods in setting page ------------------------------------------------------------
     def import_key(self):
         key_file, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*.*)')
         if len(key_file) < 1:
             pass
         else:
-             # Read the key.
+            # Read the key.
             with open(key_file, "rb") as k_file:
                 content = k_file.read()
             # Write The new key.
             key_path = self.app_path / "cores" / "security_key.key"
             with open(key_path, "wb") as k_file:
                 k_file.write(content)
-        self.log_obj.write_into_log("+", f"A new key has been imported")
-        self.statusBar().showMessage("[+] Your new key is imported successfully!")
+        # self.log_obj.write_into_log("+", f"A new key has been imported")
+        self.statusBar().showMessage("[+] Key is imported successfully")
 
     def export_key(self):
         exported_key_path, _ = QFileDialog.getSaveFileName(self, "Save File", "security_key.key")
@@ -251,102 +279,134 @@ class PyPass(QtWidgets.QMainWindow):
         # Write The new key.
         with open(exported_key_path, "wb") as k_file:
             k_file.write(content)
-        self.log_obj.write_into_log("+", f"The key is exported at {exported_key_path}")
-        self.statusBar().showMessage(f"[+] Your key is Exported successfully! @ {exported_key_path}")
+        # self.log_obj.write_into_log("+", f"The key is exported at {exported_key_path}")
+        self.statusBar().showMessage(f"[+] Your key is exported successfully @ {exported_key_path}")
 
+    # ---------------------------------------------------------------------------------------------
 
-    def run_Editor(self) -> None:
-        """Calling the editor screen"""
-        self.theme_editor = ThemeScreenEdit()
-        if self.theme_editor == QtWidgets.QDialog.Accepted:
-            self.display_accounts_list()
-            self.display_accounts_to_edit()
-            self.handleButtons()
-            # show our application
-            self.change_theme()
-            self.statusBar().showMessage("[+] Restart the application to see the new Theme :)")
-            
-                    ######################
-                    ## Separate Methods ##
-                    ######################
+    # Handling Files methods ----------------------------------------------------------------------
+    def files_list_view_clicked(self):
+        file_index = int(self.files_list_view.currentRow())
+        selected_file = self.database_obj.list_files()[file_index]
+        # Fill file data
+        self.file_id.setText(str(selected_file[0]))
+        self.file_name.setText(str(selected_file[1]))
+        self.file_directory.setText(str(selected_file[2]))
+        self.file_size.setText(str(selected_file[3]))
+        self.file_date_time.setText(str(selected_file[4]))
+        self.encrypted_name.setText(str(selected_file[5]))
 
-    def reading_database_records(self) -> list:
-        """retrieve all database accounts
+    def fill_files_list_view(self):
+        # TODO: Add file icons here
+        self.files_list_view.clear()
+        data = self.database_obj.list_files()
+        for record in data:
+            self.files_list_view.addItem(f" {record[1]}")
 
-        Returns:
-            list: list of database accounts
-        """
-        result = self.database_obj.db_query("SELECT * FROM Accounts")
-        return list(result)
+    def import_file(self):
+        save_path = BASE_DIR / "saved-files"
+        file, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*.*)')
+        if len(file) > 0:
+            with open(file, "rb") as file_reader:
+                content = file_reader.read()
 
-    
-    def display_accounts_list(self) -> None:
+            # prepare files attributes
+            time_now = datetime.datetime.now()
+            random_6_letters = ''.join(random.choice(string.ascii_uppercase) for _ in range(6))
+            random_file_name = random_6_letters + str(int(datetime.datetime.timestamp(time_now)))
+            final_enc_name = f"{random_file_name}.Enc-Py-Pass"
+            file_name = file.split("/")[-1]
+            file_directory = os.path.dirname(file)
+            file_size_in_bytes = os.path.getsize(file)
+
+            new_file = {
+                "File_Name": file_name,
+                "File_Directory": file_directory,
+                "File_Size": file_size_in_bytes,
+                "Insertion_Date": f"{time_now}",
+                "File_Encrypted_Name": final_enc_name
+            }
+            # Handling file Content
+            enc_file_content = self.security_obj.encrypt(content)
+            enc_file_path = save_path / final_enc_name
+            if os.path.isfile(random_file_name):
+                self.statusBar().showMessage(f"[+] Please try Again")
+            else:
+                try:
+                    with open(f"{enc_file_path}", "wb") as encFile:
+                        encFile.write(enc_file_content)
+                    if os.path.isfile(enc_file_path):
+                        # TODO: remove the original file
+                        self.database_obj.add_file(new_file)
+                    self.statusBar().showMessage(f"[+] File added successfully")
+                except Exception as error:
+                    print(error)
+                    self.statusBar().showMessage(f"[+] This file is already exist")
+                    # TODO: Do log here
+        self.fill_files_list_view()
+
+    def export_file(self):
+        selected_file_id = self.file_id.text()
+        selected_file = self.database_obj.get_file_by_id(selected_file_id)
+        file_name = selected_file[1]
+        encrypted_name = selected_file[-1]
+        exported_file_path, _ = QFileDialog.getSaveFileName(self, "Save File", file_name)
+        enc_file_path = BASE_DIR / "saved-files" / encrypted_name
+        if os.path.isfile(enc_file_path):
+            try:
+                with open(enc_file_path, "rb") as fileReader:
+                    content = fileReader.read()
+                    plain_content = self.security_obj.decrypt(content)
+                    with open(exported_file_path, "wb") as writer:
+                        writer.write(plain_content)
+                    if os.path.isfile(exported_file_path):
+                        # Delete File from DB
+                        self.database_obj.delete_file_by_id(selected_file_id)
+                        self.statusBar().showMessage(f"[+] File exported successfully")
+            except Exception as error:
+                print(error)
+        self.fill_files_list_view()
+
+    # may be replaced
+    def file_restore(self):
+        selected_file_id = self.file_id.text()
+        selected_file = self.database_obj.get_file_by_id(selected_file_id)
+        file_name = selected_file[1]
+        directory = selected_file[2]
+        final_file = os.path.join(directory, file_name)
+        encrypted_name = selected_file[-1]
+        enc_file_path = BASE_DIR / "saved-files" / encrypted_name
+        if os.path.isdir(directory) and os.path.isfile(enc_file_path):
+            try:
+                with open(enc_file_path, "rb") as reader:
+                    enc_content = reader.read()
+                    content = self.security_obj.decrypt(enc_content)
+                    with open(final_file, "wb") as writer:
+                        writer.write(content)
+                self.database_obj.delete_file_by_id(selected_file_id)
+                self.statusBar().showMessage(f"[+] File restored successfully")
+                self.fill_files_list_view()
+            except Exception as error:
+                print(error)
+
+    # ---------------------------------------------------------------------------------------------
+
+    # Utilities methods ---------------------------------------------------------------------------
+    def display_accounts(self, list_obj) -> None:
+        list_obj.clear()
         """append all database accounts to QListWidget on accounts page."""
         icons_path = os.path.join(os.path.dirname(__file__), "ui", "icons", "socialIcons")
-        data = self.reading_database_records()
-        record_index = 0
+        data = self.database_obj.list_accounts()
         for row in data:
             icon = QtGui.QIcon(os.path.join(icons_path, f"{row[1].lower()}.png"))
             if f"{row[1].lower()}" in SUPPORTED_PLATFORMS:
-                item = QtWidgets.QListWidgetItem(icon, f"{row[0]} :: {row[2]}")
-                self.listWidget.addItem(item)
+                item = QtWidgets.QListWidgetItem(icon, f"{row[2]}")
+                list_obj.addItem(item)
             else:
                 icon = QtGui.QIcon(os.path.join(icons_path, f"user.png"))
-                item = QtWidgets.QListWidgetItem(icon, f"{row[0]} :: {row[1]} :: {row[2]}")
-                self.listWidget.addItem(item)
-            record_index += 1
-
-    
-    def display_accounts_to_edit(self) -> None:
-        """append all database accounts to QListWidget on edit page."""
-        self.listWidget_edit_accounts.update()
-        icons_path = os.path.join(os.path.dirname(__file__), "ui", "icons", "socialIcons")
-        data = self.reading_database_records()
-        record_index = 0
-        for row in data:
-            icon = QtGui.QIcon(os.path.join(icons_path, f"{row[1].lower()}.png"))
-            if f"{row[1].lower()}" in SUPPORTED_PLATFORMS:
-                item = QtWidgets.QListWidgetItem(icon, f"{row[0]} :: {row[2]}")
-                self.listWidget_edit_accounts.addItem(item)
-                self.listWidget_edit_accounts.repaint()
-            else:
-                icon = QtGui.QIcon(os.path.join(icons_path, f"user.png"))
-                item = QtWidgets.QListWidgetItem(icon, f"{row[0]} ::{row[1]} :: {row[2]}")
-                self.listWidget_edit_accounts.addItem(item)
-                self.listWidget_edit_accounts.update()
-            record_index += 1
-
-
-    def change_theme(self):
-        json_path = self.app_path / "ui" / "themes" / "mycss.json"
-        with open(json_path, 'r') as f:
-            css_style = json.load(f)
-        self.setStyleSheet(css_style["mainQt"])
-        self.tabWidget.setStyleSheet(css_style["tabWidget"])
-        # Accounts Tabe Style
-        self.listWidget.setStyleSheet(css_style["accountsList"])
-        self.display_qr_btn.setStyleSheet(css_style["editQRButton"])
-        self.decrypt_and_copy_password.setStyleSheet(css_style["editCopyButton"])
-        # Edit Accounts Tabe Style
-        self.getting_account_id.setStyleSheet(css_style["editInputFields"])
-        self.select_by_id.setStyleSheet(css_style["editManubuttons"])
-        self.listWidget_edit_accounts.setStyleSheet(css_style["editAccountsList_2"])
-        self.edit_account_platform.setStyleSheet(css_style["editInputFields"])
-        self.edit_account_email.setStyleSheet(css_style["editInputFields"])
-        self.edit_account_password.setStyleSheet(css_style["editInputFields"])
-        self.show_password.setStyleSheet(css_style["editShowButton"])
-        self.insert_account_data.setStyleSheet(css_style["editManubuttons"])
-        self.update_account_data.setStyleSheet(css_style["editManubuttons"])
-        self.groupBoxEditTabe.setStyleSheet(css_style["ediGroup"])
-        self.delete_account_data.setStyleSheet(css_style["editDeleteButton"])
-        self.platformlabel.setStyleSheet(css_style["editLabels"])
-        self.account_label.setStyleSheet(css_style["editLabels"])
-        self.plain_password_lable.setStyleSheet(css_style["editLabels"])
-        # Settings Tabe Style
-        self.import_key_btn.setStyleSheet(css_style["editSecButtons"])
-        self.export_key_btn.setStyleSheet(css_style["editSecButtons"])
-        self.theme_editor_button.setStyleSheet(css_style["editSecButtons"])
-        self.enc_key_edit.setStyleSheet(css_style["editInputFields"])
+                item = QtWidgets.QListWidgetItem(icon, f"{row[2]}")
+                list_obj.addItem(item)
+    # ---------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
