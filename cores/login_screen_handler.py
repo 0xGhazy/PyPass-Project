@@ -2,11 +2,11 @@ import os
 import sys
 from pathlib import Path
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtGui import QPixmap
 from cores.database_api import DatabaseAPI
-from cores.logsystem import LogSystem
-
 
 signin_UI = Path(__file__).parent.parent / 'ui' / 'signin_screen.ui'
+
 
 class LoginScreen(QtWidgets.QDialog):
     """ Provide a login screen to increase the user privacy """
@@ -15,19 +15,19 @@ class LoginScreen(QtWidgets.QDialog):
         """ initialize the application with its UI and utility methods """
         super(LoginScreen, self).__init__()
         os.chdir(os.path.dirname(__file__))
-        # loading .ui design file.
         uic.loadUi(signin_UI, self)
         self.db_obj = DatabaseAPI()
-        # Load the first username to the username field
-        self.login_user_line.setText(self.get_first_user())
-        self.login_button.clicked.connect(self.login)
+        self.load_user_data()
         self.show()
+        self.login_button.clicked.connect(self.login)
 
-    def get_first_user(self):
-        db_response = self.db_obj.db_query(f"SELECT * FROM Users")
-        if db_response is not None:
-            username = list(db_response)[0][1]
-            return username
+    def load_user_data(self):
+        user_data = self.db_obj.get_user_by_id(1)
+        user_name = user_data[1]
+        user_image = user_data[3]
+        self.signin_user_img.setPixmap(QPixmap(user_image))
+        self.signin_user_img.setScaledContents(True)
+        self.login_user_line.setText(user_name)
 
     def login(self):
         """ Validate the provided username and password and call the main application. """
@@ -36,8 +36,7 @@ class LoginScreen(QtWidgets.QDialog):
         if len(login_password) < 1:
             self.status.setText("Please Enter Password!")
         else:
-            db_response = self.db_obj.db_query(f"SELECT * FROM Users")
-            user_id, user_name, password, _ = db_response[0]
+            user_id, user_name, password, image = self.db_obj.get_user_by_id(1)
             # Validate username and password.
             if login_username == user_name and login_password == password:
                 self.accept()

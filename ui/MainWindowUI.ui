@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>1330</width>
-    <height>802</height>
+    <height>833</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
+    <width>1330</width>
+    <height>833</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -24,6 +24,10 @@
   </property>
   <property name="windowTitle">
    <string>PyPass v1.0.0</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icons/Application icons/password.png</normaloff>icons/Application icons/password.png</iconset>
   </property>
   <property name="iconSize">
    <size>
@@ -172,9 +176,35 @@ border:1px solid #18ab29;</string>
          <enum>Qt::LeftToRight</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: white;
+         <string notr="true">QListWidget{
+color: white;
 border-radius:7px;
-border:1px solid #18ab29;</string>
+border:1px solid #18ab29;
+}
+
+
+QScrollBar:vertical {
+            border: 0px solid #999999;
+            background-color: rgb(34, 35, 52);
+            width:14px;    
+            margin: 0px 0px 0px 3px;
+        }
+        QScrollBar::handle:vertical {         
+            min-height: 0px;
+            border: 0px solid red;
+            border-radius: 15px;
+            background-color: rgb(92, 95, 141);
+        }
+        QScrollBar::add-line:vertical {       
+            height: 0px;
+            subcontrol-position: bottom;
+            subcontrol-origin: margin;
+        }
+        QScrollBar::sub-line:vertical {
+            height: 0 px;
+            subcontrol-position: top;
+            subcontrol-origin: margin;
+        }</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -224,9 +254,35 @@ border:1px solid #18ab29;</string>
          <enum>Qt::LeftToRight</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: white;
+         <string notr="true">QListWidget{
+color: white;
 border-radius:7px;
-border:1px solid #18ab29;</string>
+border:1px solid #18ab29;
+}
+
+
+QScrollBar:vertical {
+            border: 0px solid #999999;
+            background-color: rgb(34, 35, 52);
+            width:14px;    
+            margin: 0px 0px 0px 3px;
+        }
+        QScrollBar::handle:vertical {         
+            min-height: 0px;
+            border: 0px solid red;
+            border-radius: 15px;
+            background-color: rgb(92, 95, 141);
+        }
+        QScrollBar::add-line:vertical {       
+            height: 0px;
+            subcontrol-position: bottom;
+            subcontrol-origin: margin;
+        }
+        QScrollBar::sub-line:vertical {
+            height: 0 px;
+            subcontrol-position: top;
+            subcontrol-origin: margin;
+        }</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -532,7 +588,7 @@ border:1px solid #18ab29;
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>icons/open-eye.png</normaloff>icons/open-eye.png</iconset>
+           <normaloff>icons/Application icons/open-eye.png</normaloff>icons/Application icons/open-eye.png</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -672,9 +728,35 @@ QPushButton:hover {
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: white;
+       <string notr="true">QListWidget{
+color: white;
 border-radius:7px;
-border:1px solid #18ab29;</string>
+border:1px solid #18ab29;
+}
+
+
+QScrollBar:vertical {
+            border: 0px solid #999999;
+            background-color: rgb(34, 35, 52);
+            width:14px;    
+            margin: 0px 0px 0px 3px;
+        }
+        QScrollBar::handle:vertical {         
+            min-height: 0px;
+            border: 0px solid red;
+            border-radius: 15px;
+            background-color: rgb(92, 95, 141);
+        }
+        QScrollBar::add-line:vertical {       
+            height: 0px;
+            subcontrol-position: bottom;
+            subcontrol-origin: margin;
+        }
+        QScrollBar::sub-line:vertical {
+            height: 0 px;
+            subcontrol-position: top;
+            subcontrol-origin: margin;
+        }</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -1156,105 +1238,130 @@ border-color: rgb(124, 124, 124);</string>
      <attribute name="title">
       <string>Tab 2</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox_3">
+     <widget class="QListWidget" name="listWidget">
       <property name="geometry">
        <rect>
-        <x>-10</x>
-        <y>70</y>
-        <width>1031</width>
-        <height>561</height>
+        <x>0</x>
+        <y>0</y>
+        <width>221</width>
+        <height>801</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="styleSheet">
-       <string notr="true">border:&quot;&quot;;</string>
+       <string notr="true">QListWidget{
+	color: white;
+border: 1px solid;
+}
+</string>
       </property>
-      <property name="title">
-       <string/>
+      <property name="iconSize">
+       <size>
+        <width>30</width>
+        <height>30</height>
+       </size>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOn</enum>
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <item>
+       <property name="text">
+        <string> User Profile</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string> Security</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QTabWidget" name="tabWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>0</y>
+        <width>861</width>
+        <height>811</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>781</width>
+          <height>241</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QLabel" name="user_profile_preview">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>10</y>
+           <width>201</width>
+           <height>171</height>
+          </rect>
          </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
+         <property name="styleSheet">
+          <string notr="true">border: 1px solid;</string>
          </property>
-         <property name="widgetResizable">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../../../Photos/97xsfGue.png</pixmap>
+         </property>
+         <property name="scaledContents">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>1014</width>
-            <height>539</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QGroupBox" name="groupBox_4">
-             <property name="styleSheet">
-              <string notr="true">border:&quot;&quot;;</string>
-             </property>
-             <property name="title">
-              <string/>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QGroupBox" name="groupBox_5">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>970</width>
-                  <height>150</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QGroupBox{
-color: &quot;white&quot;;
-font-size: 30px;
-border-style: none;
-}</string>
-                </property>
-                <property name="title">
-                 <string>Security Settings</string>
-                </property>
-                <widget class="QPushButton" name="import_key_btn">
-                 <property name="geometry">
-                  <rect>
-                   <x>720</x>
-                   <y>80</y>
-                   <width>111</width>
-                   <height>51</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>75</width>
-                   <height>23</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QPushButton {
+        </widget>
+        <widget class="QPushButton" name="update_profile">
+         <property name="geometry">
+          <rect>
+           <x>620</x>
+           <y>190</y>
+           <width>151</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
 	color: white;
 font: 87 15pt &quot;Arial Black&quot;;
 	background-color: rgb(35, 134, 54);
@@ -1270,105 +1377,280 @@ QPushButton:active {
 	position:relative;
 	top:2px;
 }</string>
-                 </property>
-                 <property name="text">
-                  <string>Import</string>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_8">
-                 <property name="geometry">
-                  <rect>
-                   <x>16</x>
-                   <y>40</y>
-                   <width>221</width>
-                   <height>31</height>
-                  </rect>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>15</pointsize>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">color: &quot;white&quot;;</string>
-                 </property>
-                 <property name="text">
-                  <string>Encryption key path</string>
-                 </property>
-                </widget>
-                <widget class="QPushButton" name="export_key_btn">
-                 <property name="geometry">
-                  <rect>
-                   <x>840</x>
-                   <y>80</y>
-                   <width>111</width>
-                   <height>51</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>75</width>
-                   <height>23</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QPushButton {
-	color: white;
-font: 87 15pt &quot;Arial Black&quot;;
-	background-color: rgb(35, 134, 54);
-	border-radius:7px;
-	border:1px solid #18ab29;
-}
-
-QPushButton:hover {
-	background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
-	background-color:#18ab29;
-}
-QPushButton:active {
-	position:relative;
-	top:2px;
-}</string>
-                 </property>
-                 <property name="text">
-                  <string>Export</string>
-                 </property>
-                </widget>
-                <widget class="QLineEdit" name="enc_key_edit">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="geometry">
-                  <rect>
-                   <x>12</x>
-                   <y>79</y>
-                   <width>691</width>
-                   <height>51</height>
-                  </rect>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">border-radius:7px;
+         </property>
+         <property name="text">
+          <string>Update</string>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_13">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>50</y>
+           <width>151</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: white;</string>
+         </property>
+         <property name="text">
+          <string>Username</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="username_input">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>90</y>
+           <width>541</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-radius:7px;
 border:1px solid gray;
 color: &quot;gray&quot;;
 font-size: 20px;
 </string>
-                 </property>
-                </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         </property>
         </widget>
-       </item>
-      </layout>
+        <widget class="QPushButton" name="profile_browse">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>190</y>
+           <width>75</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+	color: white;
+font: 87 15pt &quot;Arial Black&quot;;
+	background-color: rgb(35, 134, 54);
+	border-radius:7px;
+	border:1px solid #18ab29;
+}
+
+QPushButton:hover {
+	background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+	background-color:#18ab29;
+}
+QPushButton:active {
+	position:relative;
+	top:2px;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>icons/Application icons/search.png</normaloff>icons/Application icons/search.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>801</width>
+          <height>121</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+color: &quot;white&quot;;
+font-size: 30px;
+border-style: none;
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QPushButton" name="import_key_btn">
+         <property name="geometry">
+          <rect>
+           <x>550</x>
+           <y>50</y>
+           <width>111</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+	color: white;
+font: 87 15pt &quot;Arial Black&quot;;
+	background-color: rgb(35, 134, 54);
+	border-radius:7px;
+	border:1px solid #18ab29;
+}
+
+QPushButton:hover {
+	background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+	background-color:#18ab29;
+}
+QPushButton:active {
+	position:relative;
+	top:2px;
+}</string>
+         </property>
+         <property name="text">
+          <string>Import</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>10</y>
+           <width>221</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: &quot;white&quot;;</string>
+         </property>
+         <property name="text">
+          <string>Encryption key path</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="export_key_btn">
+         <property name="geometry">
+          <rect>
+           <x>670</x>
+           <y>50</y>
+           <width>111</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+	color: white;
+font: 87 15pt &quot;Arial Black&quot;;
+	background-color: rgb(35, 134, 54);
+	border-radius:7px;
+	border:1px solid #18ab29;
+}
+
+QPushButton:hover {
+	background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+	background-color:#18ab29;
+}
+QPushButton:active {
+	position:relative;
+	top:2px;
+}</string>
+         </property>
+         <property name="text">
+          <string>Export</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="enc_key_edit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>2</x>
+           <y>50</y>
+           <width>531</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-radius:7px;
+border:1px solid gray;
+color: &quot;gray&quot;;
+font-size: 20px;
+</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
      </widget>
     </widget>
    </widget>
@@ -1404,7 +1686,7 @@ border: #372948;</string>
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../PyPass-Extension/result.png</pixmap>
+      <pixmap>default.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -1480,7 +1762,7 @@ QPushButton:active {
       <string notr="true">color: white;</string>
      </property>
      <property name="text">
-      <string>Hossam Hamdy</string>
+      <string>----</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -1637,6 +1919,25 @@ QPushButton:hover {
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
- <connections/>
+ <resources>
+  <include location="iconsref.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>listWidget</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>tabWidget_3</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>580</x>
+     <y>64</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>icons/password.png</normaloff>icons/password.png</iconset>
+    <normaloff>icons/Application icons/password.png</normaloff>icons/Application icons/password.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow{
@@ -234,10 +234,10 @@ color: gray;</string>
     <widget class="QLabel" name="signin_user_img">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>140</x>
        <y>40</y>
-       <width>151</width>
-       <height>171</height>
+       <width>170</width>
+       <height>170</height>
       </rect>
      </property>
      <property name="text">

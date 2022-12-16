@@ -130,6 +130,7 @@ dmypy.json
 
 Logs.txt
 .idea/
-saved-files/
 PyPassdb.sqlite3
 security_key.key
+ui/user_image/
+cores/logsystem.py

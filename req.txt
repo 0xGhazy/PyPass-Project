@@ -2,4 +2,3 @@ cryptography
 PyQt5
 pyperclip
 qrcode
-flask_cors

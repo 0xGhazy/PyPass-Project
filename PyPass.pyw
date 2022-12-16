@@ -6,10 +6,9 @@ import datetime
 import pyperclip
 from pathlib import Path
 from PyQt5.QtGui import *
-from PyQt5 import QtWidgets, uic, QtGui, QtCore
+from PyQt5 import QtWidgets, uic, QtGui
 from PyQt5.QtWidgets import QLineEdit, QFileDialog
 # importing applications cores
-from cores.logsystem import LogSystem
 from cores.encryption import EncryptionHandler
 from cores.database_api import DatabaseAPI
 from cores.qr_handler import QRHandler
@@ -20,9 +19,13 @@ main_UI = BASE_DIR / "ui" / "MainWindowUI.ui"
 
 # change this when you want to add new platform, append it in lower case :)
 SUPPORTED_PLATFORMS = ["facebook", "codeforces", "github",
-                       "gmail", "HackerRank", "medium",
+                       "gmail", "hackerranck", "medium",
                        "outlook", "quora", "twitter",
-                       "udacity", "udemy", "university", "wordpress"]
+                       "udacity", "udemy", "university", "wordpress", "lol", "stack overflow", "linkedin"]
+
+SUPPORTED_FILES_FORMATS = ["7z", "cpp", "c", "cs", "css", "xlsx", "exe", "flv", "html",
+                           "ai", "java", "js", "jpg", "mp3", "mp4", "pdf", "php",
+                           "png", "pptx", "psd", "py", "word", "rar", "txt", "sql"]
 
 BUTTONS_STYLE = {
     "normal-style": """QPushButton{background-color:#251B37;color: white;}
@@ -40,22 +43,22 @@ class PyPass(QtWidgets.QMainWindow):
         self.qr_handle = None
         os.chdir(os.path.dirname(__file__))
         uic.loadUi(main_UI, self)
+        self.repo_url = "https://github.com/0xGhazy/PyPass"
         self.outer_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget')
         self.inner_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_2')
+        self.settings_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_3')
         self.outer_tabWidgets.tabBar().setVisible(False)
         self.inner_tabWidgets.tabBar().setVisible(False)
+        self.settings_tabWidgets.tabBar().setVisible(False)
         # self.show()
         self.app_path = Path(__file__).resolve().parent
         self.database_obj = DatabaseAPI()
         self.security_obj = EncryptionHandler()
-        self.log_obj = LogSystem()
         self.signin_window = LoginScreen()
         self.show_password_is_clicked = True  # if show password is clicked
         if self.signin_window.exec_() == QtWidgets.QDialog.Accepted:
             self.display_accounts(self.accounts_list_edit)
             self.display_accounts(self.accounts_list_view)
-            # self.display_accounts_to_edit()
-            # self.handle_buttons()
             self.accounts_page.clicked.connect(self.outer_accounts_page)
             self.files_page.clicked.connect(self.outer_files_page)
             self.saveed_accounts_page.clicked.connect(self.accounts_view_page)
@@ -64,6 +67,7 @@ class PyPass(QtWidgets.QMainWindow):
             self.settings_page.clicked.connect(self.outer_setting_page)
             self.insert_account_data.clicked.connect(self.add_new_account)
             self.update_account_data.clicked.connect(self.edit_account)
+            self.star_my_repo.clicked.connect(self.release_note_action)
             self.show_password.clicked.connect(self.show_hide_password)
             self.delete_account_data.clicked.connect(self.delete_account)
             self.accounts_list_edit.itemClicked.connect(self.fill_account_data)
@@ -73,25 +77,11 @@ class PyPass(QtWidgets.QMainWindow):
             self.export_file_btn.clicked.connect(self.export_file)
             self.restore_file_btn.clicked.connect(self.file_restore)
             self.export_key_btn.clicked.connect(self.export_key)
+            self.profile_browse.clicked.connect(self.browse_image)
+            self.update_profile.clicked.connect(self.update_profile_data)
+            self.preview_image()
+            self.load_profile_data()
             self.show()
-
-    #
-    # def handle_buttons(self) -> None:
-    #     """ Handling all buttons in the application """
-    #     self.accounts_page.clicked.connect(self.home_page)
-    #     self.files_page.clicked.connect(self.outer_files_page)
-    #     # self.accounts_nav.clicked.connect(self.accounts_page)
-    #     # self.edit_nav.clicked.connect(self.edit_accounts_page)
-    #     self.settings_page.clicked.connect(self.setting_page)
-    #     self.decrypt_and_copy_password.clicked.connect(self.copy_plaintext_password)
-    #     self.select_by_id.clicked.connect(self.select_account_id)
-    #     self.insert_account_data.clicked.connect(self.add_new_account)
-    #     self.update_account_data.clicked.connect(self.edit_account)
-    #     self.delete_account_data.clicked.connect(self.delete_account)
-    #     self.show_password.clicked.connect(self.is_plain)
-    #     self.display_qr_btn.clicked.connect(self.show_qr_image)
-    #     self.import_key_btn.clicked.connect(self.import_key)
-    #     self.export_key_btn.clicked.connect(self.export_key)
 
     # ------------------------------------- Navigation Buttons -------------------------------------
 
@@ -124,9 +114,10 @@ class PyPass(QtWidgets.QMainWindow):
         self.accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
         self.files_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
         self.settings_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
+        self.load_profile_data()
 
     def release_note_action(self):
-        pass  # star_my_repo
+        os.system(f"explorer {self.repo_url}")
 
     # Inner Widget Navigation
     def accounts_view_page(self):
@@ -136,7 +127,6 @@ class PyPass(QtWidgets.QMainWindow):
         self.saveed_accounts_page.setStyleSheet(BUTTONS_STYLE["clicked-style"])
         self.edit_accounts_page.setStyleSheet(BUTTONS_STYLE["normal-style"])
         self.display_accounts(self.accounts_list_view)
-        self.clear_accounts_data()
 
     def accounts_edit_page(self):
         self.inner_tabWidgets = self.findChild(QtWidgets.QTabWidget, 'tabWidget_2')
@@ -214,7 +204,7 @@ class PyPass(QtWidgets.QMainWindow):
         self.clear_accounts_data()
 
     def show_hide_password(self):
-        icons_path = BASE_DIR / "ui" / "icons"
+        icons_path = BASE_DIR / "ui" / "icons" / "Application icons"
         # closed_eye = BASE_DIR / "ui" / "icons" / "closed-eye.png"
         if self.show_password_is_clicked:
             self.edit_account_password.setEchoMode(QLineEdit.EchoMode.Normal)
@@ -282,6 +272,48 @@ class PyPass(QtWidgets.QMainWindow):
         # self.log_obj.write_into_log("+", f"The key is exported at {exported_key_path}")
         self.statusBar().showMessage(f"[+] Your key is exported successfully @ {exported_key_path}")
 
+    # User profile page methods
+    def preview_image(self):
+        user = self.database_obj.get_user_by_id(1)
+        user_image = user[3]
+        self.user_profile_preview.setPixmap(QPixmap(user_image))
+        self.user_profile_preview.setScaledContents(True)
+
+    def browse_image(self):
+        user_image_path = BASE_DIR / "ui" / "user_image"
+        image_file, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*.*)')
+        image_name = image_file.split("/")[-1]
+        if len(image_file) < 1:
+            return
+        else:
+            with open(image_file, "rb") as image_file_obj:
+                content = image_file_obj.read()
+            os.chdir(user_image_path)
+            with open(image_name, "wb") as image_file_obj:
+                image_file_obj.write(content)
+            new_image_path = user_image_path / image_name
+            if os.path.isfile(str(new_image_path)):
+                self.database_obj.update_user_image(str(new_image_path), 1)
+                self.preview_image()
+            self.statusBar().showMessage(f"[+] Your profile image updated successfully")
+
+    def update_profile_data(self):
+        self.preview_image()
+        new_username = self.username_input.text()
+        self.database_obj.update_username(new_username, 1)
+        self.load_profile_data()
+        self.statusBar().showMessage(f"[+] Your username is updated successfully")
+
+    def load_profile_data(self):
+        user_profile = self.database_obj.get_user_by_id(1)
+        user_name = user_profile[1]
+        user_image = user_profile[3]
+        # set fields
+        self.user_image.setPixmap(QPixmap(user_image))
+        self.user_image.setScaledContents(True)
+        self.username_lbl.setText(user_name)
+        self.username_input.setText(user_name)
+
     # ---------------------------------------------------------------------------------------------
 
     # Handling Files methods ----------------------------------------------------------------------
@@ -297,11 +329,18 @@ class PyPass(QtWidgets.QMainWindow):
         self.encrypted_name.setText(str(selected_file[5]))
 
     def fill_files_list_view(self):
-        # TODO: Add file icons here
         self.files_list_view.clear()
         data = self.database_obj.list_files()
+        icons_path = os.path.join(os.path.dirname(__file__), "ui", "icons", "Files Icons")
         for record in data:
-            self.files_list_view.addItem(f" {record[1]}")
+            file_name = record[1]
+            ext_name = file_name.split(".")[1]
+            if ext_name in SUPPORTED_FILES_FORMATS:
+                icon = QtGui.QIcon(os.path.join(icons_path, f"{ext_name}.png"))
+            else:
+                icon = QtGui.QIcon(os.path.join(icons_path, f"file.png"))
+            item = QtWidgets.QListWidgetItem(icon, f" {file_name}")
+            self.files_list_view.addItem(item)
 
     def import_file(self):
         save_path = BASE_DIR / "saved-files"
@@ -336,13 +375,12 @@ class PyPass(QtWidgets.QMainWindow):
                     with open(f"{enc_file_path}", "wb") as encFile:
                         encFile.write(enc_file_content)
                     if os.path.isfile(enc_file_path):
-                        # TODO: remove the original file
+                        os.remove(file)
                         self.database_obj.add_file(new_file)
                     self.statusBar().showMessage(f"[+] File added successfully")
                 except Exception as error:
                     print(error)
                     self.statusBar().showMessage(f"[+] This file is already exist")
-                    # TODO: Do log here
         self.fill_files_list_view()
 
     def export_file(self):
@@ -367,7 +405,6 @@ class PyPass(QtWidgets.QMainWindow):
                 print(error)
         self.fill_files_list_view()
 
-    # may be replaced
     def file_restore(self):
         selected_file_id = self.file_id.text()
         selected_file = self.database_obj.get_file_by_id(selected_file_id)
@@ -388,7 +425,6 @@ class PyPass(QtWidgets.QMainWindow):
                 self.fill_files_list_view()
             except Exception as error:
                 print(error)
-
     # ---------------------------------------------------------------------------------------------
 
     # Utilities methods ---------------------------------------------------------------------------

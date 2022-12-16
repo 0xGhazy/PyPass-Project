@@ -1,8 +1,11 @@
 import os
 import sys
-import getpass
+from pathlib import Path
 from cores.database_api import DatabaseAPI
+from cores.encryption import EncryptionHandler
 from platform import platform
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 def check_python_version():
@@ -28,10 +31,17 @@ def install_reqs():
 
 def user_account_setup():
     db_obj = DatabaseAPI()
+    # sec_obj = EncryptionHandler()
+    # sec_obj.generate_key()
     username = os.getlogin()
-    password = getpass.getpass()
-    db_obj.db_query(f"""INSERT INTO Users (User_Name, User_Password)
-                        VALUES ('{username}', '{password}');""")
+    password = input("Password>> ")
+    default_image = BASE_DIR / "ui" / "default.png"
+    data = {
+        "User_Name": f"{username}",
+        "User_Password": f"{password}",
+        "User_Image": f"{default_image}"
+    }
+    db_obj.add_user(data)
     print("User Account Created!")
 
 

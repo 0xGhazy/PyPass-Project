@@ -38,7 +38,7 @@ class EncryptionHandler:
         """Function to generate encryption key at first time of running the application."""
         self.key_value = Fernet.generate_key()
         with open(self.security_key, "wb") as key_obj:
-            key_obj.write(str(self.key_value))
+            key_obj.write(self.key_value)
 
     def load_encryption_key(self) -> bin:
         """Function to read encryption key (security_key.key) from the same directory"""

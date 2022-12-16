@@ -158,6 +158,31 @@ class DatabaseAPI:
         response = self._get_database_data(f"SELECT * FROM Files")
         return list(response)
 
+    # Files Methods ------------------------------------------------------------------------
+
+    def update_user_image(self, new_image: str, user_id: int):
+        self._do_database_action(
+            f"""UPDATE Users SET User_Image = '{new_image}'
+                                 WHERE User_ID = {user_id};
+            """)
+
+    def update_username(self, user_name: str, user_id: int):
+        self._do_database_action(
+            f"""UPDATE Users SET User_Name = '{user_name}'
+                                 WHERE User_ID = {user_id};
+            """)
+
+    def get_user_by_id(self, user_id: int):
+        response = self._get_database_data(f"SELECT * FROM Users WHERE User_ID = {user_id};")
+        return list(response)[0]
+
+    def add_user(self, user_data: dict):
+        self._do_database_action(
+            f"""INSERT INTO Users (User_Name, User_Password, User_Image)
+                            VALUES ('{user_data['User_Name']}',
+                                    '{user_data['User_Password']}',
+                                    '{user_data['User_Image']}');
+                """)
 
 if __name__ == "__main__":
     x = DatabaseAPI()
